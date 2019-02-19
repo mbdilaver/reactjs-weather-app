@@ -12,3 +12,65 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.day-temp {
+  color: white;
+}
+
+.night-temp {
+  color: wheat;
+}
+
+.weather-console {
+  background-color: #DEDFE4;
+  border-radius: 4px;
+  max-width: 720px;
+}
+
+h5 {
+  margin: 0;
+}
+
+.label {
+  padding: 2px;
+  border-radius: 4px;
+  margin: 0 auto;
+}
+
+.day-temp {
+  background-color: #FC9E4F;
+  color: #EEE5E5;
+}
+
+.night-temp {
+  background-color: #173146;
+  color: #DDCECD;
+}
+
+.card-title {
+  /*background-color: #173146;*/
+  color: #173146;
+  font-size: 1.2em;
+}
+
+.card-list-tab {
+  display: flex;
+}
+
+.temp-pair {
+  display: flex;
+  padding: 2px 0;
+}
+
+.card {
+  text-align: center;
+  flex-direction: column;
+  padding: 8px;
+  background-image: linear-gradient(-60deg, #DEDFE4, #fff);
+}
+
+.card-icon {
+  font-size: 64px;
+  padding: 4px 0;
+  color: #FC9E4F;
+}
