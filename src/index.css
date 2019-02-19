@@ -24,7 +24,7 @@ code {
 .weather-console {
   background-color: #DEDFE4;
   border-radius: 4px;
-  max-width: 720px;
+  display: inline-block;
 }
 
 h5 {
@@ -38,7 +38,7 @@ h5 {
 }
 
 .day-temp {
-  background-color: #FC9E4F;
+  background-color: #337CA0; /*#94B4C4;*/
   color: #EEE5E5;
 }
 
@@ -59,7 +59,9 @@ h5 {
 
 .temp-pair {
   display: flex;
+  margin: 0 auto;
   padding: 2px 0;
+  width: 80%;
 }
 
 .card {
@@ -70,7 +72,8 @@ h5 {
 }
 
 .card-icon {
+  min-width: 99px;
   font-size: 64px;
-  padding: 4px 0;
-  color: #FC9E4F;
+  padding: 12px 0;
+  color: #337CA0;
 }
