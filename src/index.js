@@ -4,19 +4,13 @@ import './index.css';
 import './css/weather-icons.min.css';
 
 const sliceHourlyData = (time, data) => {
-    return data["data"].filter((val, i, arr) => {
+    return data["data"].filter((val) => {
         return new Date(val["time"] * 1000).getDate() === new Date(time * 1000).getDate();
         }
     );
 };
 
-const API = {
-    key: "6c3f760a63f55ca7709542a80bad4fe7",
-    lat: "41.0096",
-    lon: "28.9652",
-};
-
-// Darksky weather icon 2 WeatherIcon icon
+/* DarkSky icon to WeatherIcon icon */
 const DI2WI = {
     "wind": "wi-cloudy-gusts",
     "fog": "wi-fog",
@@ -40,7 +34,7 @@ const getDayName = (time) => {
 const getFormattedHour = (time) => {
     let date = new Date(parseInt(time) * 1000);
     return date.getHours() < 10 ? "0" + date.getHours() + ":00" : date.getHours() + ":00";
-}
+};
 
 const WeatherCard = ({weather, onCardClick, isDaily}) => {
 
@@ -144,12 +138,14 @@ class App extends Component {
     }
 
     componentDidMount() {
-        const URL = "https://cors.io/?https://api.darksky.net/forecast/"
-            + API.key + "/"
-            + API.lat + ","
-            + API.lon
+        // Set URL by editing .env file
+        const URL = process.env.REACT_APP_API_URL
+            + process.env.REACT_APP_API_KEY + "/"
+            + process.env.REACT_APP_LAT + ","
+            + process.env.REACT_APP_LON
             + "?units=ca"
             + "&extend=hourly";
+
         fetch(URL)
             .then(response => {
                 return response.json();
