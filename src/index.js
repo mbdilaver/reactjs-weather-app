@@ -1,93 +1,178 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import './css/weather-icons.min.css';
 
+const sliceHourlyData = (time, data) => {
+    return data["data"].filter((val) => {
+        return new Date(val["time"] * 1000).getDate() === new Date(time * 1000).getDate();
+        }
+    );
+};
 
-class WeatherConsole extends React.Component {
+/* DarkSky icon to WeatherIcon icon */
+const DI2WI = {
+    "wind": "wi-cloudy-gusts",
+    "fog": "wi-fog",
+    "clear-day": "wi-day-sunny",
+    "partly-cloudy-day": "wi-day-cloudy",
+    "clear-night": "wi-night-clear",
+    "partly-cloudy-night": "wi-night-alt-cloudy",
+    "snow": "wi-snow",
+    "rain": "wi-rain",
+    "cloudy": "wi-day-cloudy",
+};
+
+const getDayName = (time) => {
+    let date = new Date(parseInt(time) * 1000);
+    return new Intl.DateTimeFormat(
+        'en-US',
+        {weekday: 'long'})
+        .format(date);
+};
+
+const getFormattedHour = (time) => {
+    let date = new Date(parseInt(time) * 1000);
+    return date.getHours() < 10 ? "0" + date.getHours() + ":00" : date.getHours() + ":00";
+};
+
+const WeatherCard = ({weather, onCardClick, isDaily}) => {
+
+    const handleCardClick = () => {
+        onCardClick(weather['time']);
+    };
+
+    // Find the name of the day
+    let title = isDaily ? getDayName(weather['time']) : getFormattedHour(weather['time']);
+    let tempLabels = isDaily
+        ? [
+            <div className="day-temp label">{Math.round(weather["temperatureHigh"]) + "\u00B0"}</div>,
+            <div className="night-temp label">{Math.round(weather["temperatureLow"]) + "\u00B0"}</div>
+          ]
+        :   <div className="day-temp label">{Math.round(weather["temperature"]) + "\u00B0"}</div>;
+
+    return (
+        <div
+            className="card"
+            onClick={handleCardClick}>
+            <div className="card-title label">
+                {title}
+            </div>
+            <div className="card-icon">
+                <i className={"wi " + DI2WI[weather["icon"]]}> </i>
+            </div>
+            <div className="temp-pair">
+                {tempLabels}
+            </div>
+        </div>
+    );
+};
+
+const CardListTab = ({weatherData, onCardClick, isDaily}) => {
+    return (
+        <div className="card-list-tab">
+            {weatherData.map((weather) =>
+                (
+                    <div
+                        key={weather["time"]}>
+                        <WeatherCard
+                            weather={weather}
+                            onCardClick={onCardClick}
+                            isDaily={isDaily}/>
+                    </div>
+                )
+            )}
+        </div>
+    );
+};
+
+class WeatherConsole extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            daily: true,
+            time: null
+        };
+
+        this.handleCardClick = this.handleCardClick.bind(this);
+    }
+
+    handleCardClick(time) {
+        if (this.state.daily) {
+            this.setState({
+                daily: false,
+                time: time,
+            });
+        } else {
+            this.setState({
+                daily: true,
+            });
+        }
+    }
 
     render() {
-        const weatherList= this.props.weatherList;
+        const {weatherData} = this.props;
+        const data = this.state.daily ? weatherData['daily']['data'] : sliceHourlyData(this.state.time, weatherData['hourly']);
 
         return (
             <div className="weather-console">
-                {/*<CardGraphTab />*/}
-                <CardListTab weatherList={weatherList}/>
+                  <CardListTab
+                    weatherData={data}
+                    onCardClick={this.handleCardClick}
+                    isDaily={this.state.daily}/>
             </div>
         );
     }
 }
 
-class CardListTab extends React.Component {
+const Loader = () => <div className="loader" />;
+
+class App extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            weatherData: null,
+        };
+    }
+
+    componentDidMount() {
+        // Set URL by editing .env file
+        const URL = process.env.REACT_APP_API_URL
+            + process.env.REACT_APP_API_KEY + "/"
+            + process.env.REACT_APP_LAT + ","
+            + process.env.REACT_APP_LON
+            + "?units=ca"
+            + "&extend=hourly";
+
+        fetch(URL)
+            .then(response => {
+                return response.json();
+            })
+            .then(json => {
+                this.setState({weatherData: json});
+            })
+            .catch(error => console.error(error));
+    }
 
     render() {
-        const weatherList = this.props.weatherList;
+        const weatherData = this.state.weatherData;
 
         return (
-            <div className="card-list-tab">
-                {weatherList.map((weather) =>
-                    <WeatherCard weather={weather} />
-                )}
+            <div className="App">
+                { weatherData
+                  ? <WeatherConsole
+                        weatherData={this.state.weatherData}
+                    />
+                  : <Loader />
+                }
             </div>
         );
     }
 }
-
-class WeatherCard extends React.Component {
-
-    render() {
-        const weather = this.props.weather;
-        return (
-            <div className="card">
-                <div className="card-title label">{weather.time}</div>
-
-                <div className="card-icon">
-                    <i className={"wi " + weather.icon}></i>
-                </div>
-
-                <div className="temp-pair">
-                    <div className="day-temp label">{weather.dayTemp + "\u00B0"}</div>
-                    <div className="night-temp label">{weather.nightTemp + "\u00B0"}</div>
-                </div>
-            </div>
-        );
-    }
-}
-
-const weatherList = [
-    {
-        time: "Mon",
-        dayTemp: 20,
-        nightTemp: 17,
-        icon: "wi-day-sunny"
-    },
-    {
-        time: "Tue",
-        dayTemp: 19,
-        nightTemp: 15,
-        icon: "wi-day-cloudy"
-    },
-    {
-        time: "Wed",
-        dayTemp: 18,
-        nightTemp: 14,
-        icon: "wi-day-sunny"
-    },
-    {
-        time: "Thu",
-        dayTemp: 15,
-        nightTemp: 11,
-        icon: "wi-day-rain"
-    },
-    {
-        time: "Sun",
-        dayTemp: 3,
-        nightTemp: -1,
-        icon: "wi-snow"
-    },
-];
 
 ReactDOM.render(
-    <WeatherConsole weatherList={weatherList}/>,
+    <App />,
     document.getElementById('root')
 );
