@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
+
 import './index.css';
 import './css/weather-icons.min.css';
 
@@ -128,44 +130,63 @@ class WeatherConsole extends Component {
 
 const Loader = () => <div className="loader" />;
 
+// Set URL by editing .env file
+const URL = process.env.REACT_APP_API_URL
+    + process.env.REACT_APP_API_KEY + "/"
+    + process.env.REACT_APP_LAT + ","
+    + process.env.REACT_APP_LON
+    + "?units=ca"
+    + "&extend=hourly";
+
 class App extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             weatherData: null,
+            isLoading: false,
+            error: null,
         };
     }
 
-    componentDidMount() {
-        // Set URL by editing .env file
-        const URL = process.env.REACT_APP_API_URL
-            + process.env.REACT_APP_API_KEY + "/"
-            + process.env.REACT_APP_LAT + ","
-            + process.env.REACT_APP_LON
-            + "?units=ca"
-            + "&extend=hourly";
+    async componentDidMount() {
+        await this.getWeatherData();
+    }
 
-        fetch(URL)
-            .then(response => {
-                return response.json();
+    async getWeatherData() {
+        this.setState({ isLoading: true });
+
+        try {
+            const result = await axios.get(URL);
+            this.setState({
+                weatherData: result.data,
+                isLoading: false,
+            });
+        } catch (e) {
+            this.setState({
+                isLoading: false,
+                error: e,
             })
-            .then(json => {
-                this.setState({weatherData: json});
-            })
-            .catch(error => console.error(error));
+        }
     }
 
     render() {
+        if (this.state.isLoading) {
+            return <Loader />;
+        }
+
+        if (this.state.error) {
+            return <div>An error occurred!</div>;
+        }
+
         const weatherData = this.state.weatherData;
 
         return (
             <div className="App">
-                { weatherData
-                  ? <WeatherConsole
+                { weatherData &&
+                    <WeatherConsole
                         weatherData={this.state.weatherData}
                     />
-                  : <Loader />
                 }
             </div>
         );

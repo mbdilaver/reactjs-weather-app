@@ -64,7 +64,7 @@ code {
   text-align: center;
   flex-direction: column;
   padding: 8px;
-  background-image: linear-gradient(-60deg, #DEDFE4, #fff);
+  /*background-image: linear-gradient(-60deg, #DEDFE4, #fff);*/
 }
 
 .card-icon {
@@ -90,5 +90,5 @@ code {
 }
 
 .App {
-  text-align: center;
+  /*text-align: center;*/
 }
