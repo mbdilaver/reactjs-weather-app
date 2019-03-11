@@ -8,13 +8,34 @@ class Current extends Component {
         this.state = {
             isListOpen: false,
         };
+
+        this.handleListOpenClick = this.handleListOpenClick.bind(this);
+    }
+
+    handleListOpenClick() {
+        this.setState(({isListOpen}) => {return {isListOpen: !isListOpen}})
     }
 
     render() {
+        const {
+            city,
+            temp,
+            logo,
+            tempHigh,
+            tempLow,
+            hourlyData} = this.props;
+
         return (
-            <div>
-                <Jumbo />
-                <HourlyList />
+            <div className="current-pane"
+                 onClick={this.handleListOpenClick}>
+                <Jumbo city={city}
+                       temp={temp}
+                       logo={logo}
+                       tempHigh={tempHigh}
+                       tempLow={tempLow}
+                       />
+                {this.state.isListOpen &&
+                    <HourlyList hourlyData={hourlyData}/>}
             </div>
         );
     }
