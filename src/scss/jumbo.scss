@@ -1,0 +1,30 @@
+.jumbo {
+  background-image: linear-gradient(0deg, #343451, #3F3F62);
+}
+
+$text-font-size: 2em;
+$sup-text-color: #faf9f9;
+
+.location-text, .temp-pair {
+  font-size: $text-font-size;
+  color: $sup-text-color;
+}
+
+.curr-temp {
+  font-size: 4em;
+  color: white;
+}
+
+.logo {
+
+}
+
+span {
+  font-size: 4em;
+  display: inline-block;
+}
+
+
+.i {
+  //width: auto;
+}
